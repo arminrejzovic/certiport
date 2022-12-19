@@ -1,0 +1,18 @@
+body{
+    font-family: "Bahnschrift", sans-serif;
+}
+
+header{
+    background-color: white;
+    width: 100%;
+    box-shadow: 0 -6px 10px 5px rgba(0,0,0,0.5);
+}
+
+.button {
+    height: 3rem;
+    width: 15%;
+    background-color: steelblue;
+    color: white;
+    outline: none;
+    border: none;
+}

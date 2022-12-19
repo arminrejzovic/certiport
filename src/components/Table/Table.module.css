@@ -1,0 +1,9 @@
+.caption{
+    font-weight: bold;
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+thead{
+    user-select: none;
+}

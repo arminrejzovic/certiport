@@ -1,0 +1,14 @@
+.expanded{
+    width: 15%;
+    transition: width 0.3s ease-in-out;
+    height: calc(100vh - 3rem);
+    background-color: #f0f0f0;
+    padding-top: 2rem;
+    overflow: hidden;
+}
+
+.collapsed{
+    composes: expanded;
+    transition: width 0.3s ease-in-out;
+    width: 0;
+}

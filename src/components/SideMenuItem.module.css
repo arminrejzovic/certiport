@@ -1,0 +1,28 @@
+.active{
+    border-left: 10px solid steelblue;
+    text-decoration: none;
+    color: steelblue;
+    padding-left: 1rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.pending{
+    color: fuchsia;
+}
+
+.link{
+    border-left: 10px solid transparent;
+    text-decoration: none;
+    color: black;
+    padding-left: 1rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.link:hover{
+    color: steelblue;
+    background-color: #e3e3e3;
+}
