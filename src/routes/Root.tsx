@@ -12,7 +12,7 @@ function Root() {
             <header>
                 <button className={Styles.button} onClick={() => setSideMenuOpen(old => !old)}>DCCS TUZLA</button>
             </header>
-            <div style={{display: "flex"}}>
+            <div style={{display: "flex", gap: "2rem"}}>
                 <SideMenu children={links} isOpen={sideMenuOpen}/>
                 <Outlet/>
             </div>

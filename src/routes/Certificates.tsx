@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Table from "../components/Table/Table";
+import Table, {SortOrder} from "../components/Table/Table";
 
 function Certificates() {
 
@@ -16,6 +16,12 @@ function Certificates() {
         name: string;
         city: string;
         index: number;
+    }
+
+    type Country = {
+        name: string;
+        capital: string;
+        language: string;
     }
 
     const users = [
@@ -74,24 +80,54 @@ function Certificates() {
             id: 2,
             name: "DCCS d.o.o.",
             city: "Tuzla",
-            index: 1
+            index: 2
         },
         {
             id: 3,
             name: "Daimler",
             city: "Stuttgart",
-            index: 1
+            index: 3
         },
         {
             id: 4,
             name: "Paradox Interactive",
             city: "Stockholm",
-            index: 1
+            index: 4
+        },
+    ];
+
+    let countries = [
+        {
+            name: "Russia",
+            capital: "Moscow",
+            language: "Russian"
+        },
+        {
+            name: "Turkey",
+            capital: "Ankara",
+            language: "Turkish"
+        },
+        {
+            name: "Bosnia and Herzegovina",
+            capital: "Sarajevo",
+            language: "Bosnian"
+        },
+        {
+            name: "Iran",
+            capital: "Tehran",
+            language: "Farsi"
+        },
+        {
+            name: "Belarus",
+            capital: "Minsk",
+            language: "Belorussian"
         },
     ]
 
     const [selected, setSelected] = useState<Supplier>();
     const [multiSelected, setMultiSelected] = useState<User[]>([users[2], users[3]]);
+    const [nations, setNations] = useState(countries);
+    const [employees, setEmployees] = useState(users);
 
     return (
         <main>
@@ -100,11 +136,11 @@ function Certificates() {
                 data={suppliers}
                 caption={"Users in the database"}
                 columns={[{text: "Name", refersTo: "name"}, {text: "City", refersTo: "city"}, {text: "Index", refersTo: "index"}]}
-                sortBy={"default"}
+                sortMethod={"default"}
                 select={{
                     mode: "single",
                     onSelect: (s: Supplier) => setSelected(s),
-                    onUnSelect: (s: Supplier) => console.log(s),
+                    onUnselect: (s: Supplier) => console.log(s),
                     getPreselected: () => selected ? [selected] : [],
                     onSelectionClear: () => setSelected(undefined)
                 }}
@@ -119,17 +155,25 @@ function Certificates() {
 
             <Table
                 <User>
-                data={users}
+                data={employees}
                 caption={"MULTI SELECT"}
                 columns={[{text: "Name", refersTo: "name"}, {text: "Surname", refersTo: "surname"}, {text: "Email", refersTo: "email"}, {text: "Phone number", refersTo: "phone"}]}
-                sortBy={"default"}
+                sortMethod={"default"}
                 select={{
                     mode: "multi",
                     onSelect: (user: User) => setMultiSelected([...multiSelected, user]),
-                    onUnSelect: (user: User) => setMultiSelected([...multiSelected.filter((old) => user.id !== old.id)]),
+                    onUnselect: (user: User) => setMultiSelected([...multiSelected.filter((old) => user.id !== old.id)]),
                     getPreselected: () => multiSelected,
                     onSelectionClear: () => setMultiSelected([])
                 }}
+                defaultSort={{key: "surname", order: SortOrder.DESC}}
+                rowActions={[
+                    {position: "start", actionElement: <button>Alert name</button>, action: (u) => alert(u.name)},
+                    {position: "end", actionElement: <button>x</button>, action: (u) => {
+                        setEmployees(employees.filter(emp => emp.id !== u.id));
+                        setMultiSelected(multiSelected.filter(emp => emp.id !== u.id));
+                    }}
+                ]}
             />
 
 
@@ -139,6 +183,20 @@ function Certificates() {
                     {multiSelected.map((user) => <li>{user.name} {user.surname}</li>)}
                 </ol>
             </div>
+
+            <Table
+                <Country>
+                data={nations}
+                caption={"Regular table without sorting and selecting"}
+                columns={[{text: "Name", refersTo: "name"}, {text: "Capital City", refersTo: "capital"}, {text: "Official Language", refersTo: "language"}]}
+                defaultSort={{key: "capital", order: SortOrder.DESC}}
+                rowActions={[
+                    {position: "start", actionElement: <button>Alert name</button>, action: (c) => alert(c.name)},
+                    {position: "end", actionElement: <button>Alert capital</button>, action: (c) => alert(c.capital)},
+                    {position: "end", actionElement: <button>Alert language</button>, action: (c) => alert(c.language)},
+                    {position: "end", actionElement: <button>x</button>, action: (c) => {setNations(nations.filter(n => n.name !== c.name))}}
+                ]}
+            />
         </main>
     );
 }
