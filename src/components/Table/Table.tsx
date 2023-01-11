@@ -1,6 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {ReactElement, useEffect, useMemo, useState} from 'react';
 import Styles from "./Table.module.css"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faForwardStep, faBackwardStep, faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
 
+// TODO Remove custom sorting methods
+// TODO Do something about non-flat data - maybe pass flatten function as a prop
+// TODO Think about how columns work
+// TODO Think about adding custom row rendering method as a prop
+// TODO Fix sorting when table is paginated
+// TODO Consider removing rowActions, since they overlap with custom rows
+// TODO Change defaultSort by removing the option to pass a custom sorting function
+// TODO Consider making <T> tabular, as in make it extend a "Tabular" interface, which is an object containing only numbers, strings, dates, booleans
+// TODO Make <tfoot> stick to the bottom
 
 /**
  * @Param data - Any kind of data
@@ -12,6 +23,7 @@ import Styles from "./Table.module.css"
  */
 interface TableProps<T> {
     data: T[];
+    primaryKey: keyof T;
     columns: {
         refersTo: keyof T;
         text: string;
@@ -37,20 +49,34 @@ interface TableProps<T> {
     }[];
 
     defaultSort?: { key: keyof T, order: SortOrder, sortingFunction?: (obj1: T, obj2: T) => -1 | 0 | 1 };
+
+    customRows?: {
+        position: "start" | "end",
+        render: (item: T) => ReactElement<HTMLTableDataCellElement>;
+    }[];
+
+    pagination?: {
+        itemsPerPage: number;
+    }
 }
 
 export enum SortOrder {
-    "ASC" = 1,
-    "DESC" = -1,
+    "ASC" = -1,
+    "DESC" = 1,
 }
 
+
 function Table<T>(props: TableProps<T>) {
+    // Data
     const [rows, setRows] = useState<T[]>([]);
+    // Sorting
     const [sortingBy, setSortingBy] = useState<keyof T | undefined>(undefined);
     const [sortingOrder, setSortingOrder] = useState<SortOrder>(SortOrder.ASC);
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        if(props.defaultSort){
+        if (props.defaultSort) {
             const sortingFunction = props.defaultSort.sortingFunction ?? ((a: T, b: T) => {
                 //@ts-ignore
                 if (a[props.defaultSort.key] > b[props.defaultSort.key]) return 1 * props.defaultSort.order;
@@ -60,11 +86,47 @@ function Table<T>(props: TableProps<T>) {
             })
             const sorted = props.data.sort(sortingFunction);
             setRows(sorted);
-        }
-        else {
+        } else {
             setRows(props.data);
         }
     }, [props.data]);
+
+    function resolveSortingSymbol(heading: string | symbol | number) {
+        if (!props.sortMethod) {
+            // No sorting at all
+            return "";
+        }
+
+        if (heading !== sortingBy) {
+            // Sorting enabled, but sorting by different column
+            return "⇕";
+        }
+
+        if (sortingOrder === SortOrder.ASC) {
+            // Sorting by this column, Ascending order
+            return "▲";
+        }
+
+        // Sorting by this column, Descending order
+        return "▼";
+    }
+
+    function getStartBound(){
+        if(!props.pagination){
+            return  undefined;
+        }
+
+        const endIndex = currentPage * props.pagination.itemsPerPage;
+        return endIndex - props.pagination.itemsPerPage;
+    }
+
+    function getEndBound(){
+        if(!props.pagination){
+            return  undefined;
+        }
+
+        return currentPage * props.pagination.itemsPerPage;
+    }
 
     return (
         <table>
@@ -72,14 +134,27 @@ function Table<T>(props: TableProps<T>) {
             <thead>
             <tr>
                 {
-                    props.select && (<th><button onClick={() => props!!.select!!.onSelectionClear()}>Clear</button></th>)
+                    props.select &&
+                    <th style={{textAlign: "center"}}>
+                        <button onClick={() => props!!.select!!.onSelectionClear()}>Clear</button>
+                    </th>
                 }
                 {
-                    props.rowActions && props.rowActions.filter((ra) => ra.position === "start").map((a) => {
-                        return <th></th>
+                    // Rendering empty <th> tags for each start row action
+                    props.rowActions &&
+                    props.rowActions.filter((ra) => ra.position === "start").map((a, i) => {
+                        return <th key={i}></th>
                     })
                 }
                 {
+                    // Rendering empty <th> tags for start custom row
+                    props.customRows &&
+                    props.customRows.filter((cr) => cr.position === "start").map((a, i) => {
+                        return <th key={i}></th>
+                    })
+                }
+                {
+                    // Rendering HEADINGS
                     props.columns.map((heading) => {
                         return (
                             <th
@@ -105,7 +180,8 @@ function Table<T>(props: TableProps<T>) {
                                     setSortingOrder(sortingOrder * -1);
                                     setRows(sorted);
                                 }}
-                            >{heading.text} {props.sortMethod ? (sortingBy === heading.refersTo) ? (sortingOrder === SortOrder.ASC ? "▲" : "▼") : "⇕" : ""}
+                            >
+                                {heading.text} {resolveSortingSymbol(heading.refersTo)}
                             </th>
                         )
                     })
@@ -114,24 +190,22 @@ function Table<T>(props: TableProps<T>) {
             </thead>
             <tbody>
             {
-                rows.map((row) => {
+                rows.slice(getStartBound(), getEndBound()).map((row, rowIndex) => {
                     return (
-                        <tr key={JSON.stringify(row)}>
+                        <tr key={String(row[props.primaryKey])}>
                             {
                                 // RENDERING SELECT IF SPECIFIED
                                 props.select && (
-                                    <td>
+                                    <td style={{textAlign: "center"}}>
                                         <input
                                             name={props.caption}
                                             type={props.select.mode === "single" ? "radio" : "checkbox"}
-                                            checked={props.select.getPreselected().includes(row)}
+                                            checked={props.select.getPreselected().some((item) => item[props.primaryKey] === row[props.primaryKey])}
                                             onChange={(e) => {
                                                 if (e.target.checked) {
-                                                    //@ts-ignore
-                                                    props.select.onSelect(row);
+                                                    props.select?.onSelect(row);
                                                 } else {
-                                                    //@ts-ignore
-                                                    props.select.onUnSelect(row);
+                                                    props.select?.onUnselect(row);
                                                 }
                                             }}
                                         />
@@ -140,20 +214,60 @@ function Table<T>(props: TableProps<T>) {
                             }
                             {
                                 // RENDERING START ROW ACTIONS
-                                props.rowActions && props.rowActions.filter((ra) => ra.position === "start").map((a) => {
-                                    return <td onClick={() => a.action(row)}>{a.actionElement}</td>
+                                props.rowActions &&
+                                props.rowActions.filter((ra) => ra.position === "start").map((a, i) => {
+                                    return (
+                                        <td
+                                            key={`start ${rowIndex}.${i}`}
+                                            onClick={() => a.action(row)}
+                                        >
+                                            {a.actionElement}
+                                        </td>
+                                    )
+                                })
+                            }
+                            {
+                                // RENDERING START CUSTOM ROWS
+                                props.customRows &&
+                                props.customRows.filter((cr) => cr.position === "start").map((a, i) => {
+                                    return (
+                                        a.render(row)
+                                    );
                                 })
                             }
                             {
                                 // RENDERING DATA
                                 props.columns.map(({refersTo}) => {
-                                    return <td style={{maxHeight: "max-content", maxWidth: "max-content"}} key={String(refersTo)}>{String(row[refersTo])}</td>
+                                    return (
+                                        <td
+                                            style={{maxHeight: "max-content", maxWidth: "max-content"}}
+                                            key={String(refersTo)}
+                                        >
+                                            {String(row[refersTo])}
+                                        </td>
+                                    )
+                                })
+                            }
+                            {
+                                // RENDERING END CUSTOM ROWS
+                                props.customRows &&
+                                props.customRows.filter((cr) => cr.position === "end").map((a, i) => {
+                                    return (
+                                        a.render(row)
+                                    );
                                 })
                             }
                             {
                                 // RENDERING END ROW ACTIONS
-                                props.rowActions && props.rowActions.filter((ra) => ra.position === "end").map((a) => {
-                                    return <td style={{maxHeight: "max-content", maxWidth: "max-content"}} onClick={() => a.action(row)}>{a.actionElement}</td>
+                                props.rowActions &&
+                                props.rowActions.filter((ra) => ra.position === "end").map((a, i) => {
+                                    return (
+                                        <td
+                                            key={`end ${rowIndex}.${i}`}
+                                            style={{maxHeight: "max-content", maxWidth: "max-content"}}
+                                            onClick={() => a.action(row)}>{a.actionElement}
+                                        </td>
+                                    )
                                 })
                             }
                         </tr>
@@ -161,6 +275,40 @@ function Table<T>(props: TableProps<T>) {
                 })
             }
             </tbody>
+            {
+                props.pagination && (
+                <tfoot>
+                    <div>
+                        <span>
+                            {(currentPage - 1) * props.pagination.itemsPerPage + 1} - {Math.min(currentPage * props.pagination.itemsPerPage, rows.length)} of {rows.length}
+                        </span>
+                        <span>
+                            <FontAwesomeIcon icon={faBackwardStep} onClick={() => {
+                                if(currentPage !== 1) setCurrentPage(1);
+                            }}
+                            />
+                        </span>
+                        <span>
+                            <FontAwesomeIcon icon={faChevronLeft} onClick={() => {
+                                if(currentPage > 1) setCurrentPage(currentPage - 1);
+                            }}/>
+                        </span>
+                        <span>
+                            <FontAwesomeIcon icon={faChevronRight} onClick={() => {
+                                const totalPages = Math.ceil(rows.length / props.pagination!!.itemsPerPage);
+                                if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                            }}/>
+                        </span>
+                        <span>
+                            <FontAwesomeIcon icon={faForwardStep} onClick={() => {
+                                const totalPages = Math.ceil(rows.length / props.pagination!!.itemsPerPage);
+                                setCurrentPage(totalPages);
+                            }}/>
+                        </span>
+                    </div>
+                </tfoot>
+                )
+            }
         </table>
     );
 }

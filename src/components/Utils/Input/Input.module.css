@@ -1,0 +1,32 @@
+.input{
+    border: 2px solid #f0f0f0;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+    color: darkgray;
+}
+
+.input:has(input:focus){
+    border: 2px solid black;
+    color: black;
+}
+
+.input > input{
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 0.5rem;
+}
+
+.input > input::placeholder{
+    color: darkgray;
+}
+
+.label{
+    position: absolute;
+    top: -1.25rem;
+    left: 0;
+    font-size: 0.75rem;
+}

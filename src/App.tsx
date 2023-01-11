@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {Outlet} from "react-router-dom";
-import SideMenu from "../components/SideMenu";
-import {links} from "../mock/Links";
-import "../App.css"
+import SideMenu from "./components/Side Menu/SideMenu";
+import {links} from "./mock/Links";
+import "./App.css"
 import Styles from "./Root.module.css"
 
-function Root() {
+function App() {
     const [sideMenuOpen, setSideMenuOpen] = useState(true);
     return (
         <>
@@ -14,10 +14,12 @@ function Root() {
             </header>
             <div style={{display: "flex", gap: "2rem"}}>
                 <SideMenu children={links} isOpen={sideMenuOpen}/>
-                <Outlet/>
+                <main style={{height: "calc(100vh - 3rem)", overflowY: "scroll", flexGrow: "1", paddingTop: "2rem"}}>
+                    <Outlet/>
+                </main>
             </div>
         </>
     );
 }
 
-export default Root;
+export default App;

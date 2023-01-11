@@ -15,13 +15,6 @@ interface SideMenuProps {
     onClose?: () => void;
 }
 
-/**
- *
- * @param children - List of MenuItems to be shown
- * @param isOpen  - Defines whether the SideMenu is expanded or not
- * @param onClose - Use this function to close SideMenu, or pass empty function to make SideMenu persistent
- *
- */
 function SideMenu({children, isOpen, onClose}: SideMenuProps) {
 
     return (
