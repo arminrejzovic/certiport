@@ -7,6 +7,7 @@ import Certificates from "./routes/Certificates/Certificates";
 import Suppliers from "./routes/Suppliers";
 import Login from "./routes/Login/Login";
 import SignUp from "./routes/Sign Up/SignUp";
+import OpenCertificate from "./routes/Certificates/OpenCertificate";
 
 const router = createBrowserRouter([
     {
@@ -17,6 +18,11 @@ const router = createBrowserRouter([
             {
                 path: "/certificates",
                 element: <Certificates/>,
+            },
+
+            {
+                path: "/certificate",
+                element: <OpenCertificate/>,
             },
             {
                 path: "/about",

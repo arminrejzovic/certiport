@@ -21,8 +21,8 @@ function SideMenu({children, isOpen, onClose}: SideMenuProps) {
         <aside className={isOpen ? Style.expanded : Style.collapsed}>
             <nav className={Style.links}>
                 {
-                    children.map(child => {
-                        return <SideMenuItem item={child} level={1}/>
+                    children.map((child, i) => {
+                        return <SideMenuItem key={i} item={child} level={1}/>
                     })
                 }
             </nav>

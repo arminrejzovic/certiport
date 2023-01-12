@@ -4,7 +4,7 @@ import IconDropDown from "../../components/Utils/IconDropdown/IconDropDown";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCog} from "@fortawesome/free-solid-svg-icons";
 
-interface Certificate {
+export interface Certificate {
     id: number;
     type: string;
     supplier: string;
@@ -129,9 +129,9 @@ function Certificates() {
                     {text: "Valid from", refersTo: "validFrom"},
                     {text: "Valid to", refersTo: "validTo"}
                 ]}
-                sortMethod={"default"}
+                sort
                 defaultSort={{key: "id", order: SortOrder.ASC}}
-                customRows={[
+                widgets={[
                     {
                         position: "start",
                         render: (item) => {
@@ -150,7 +150,7 @@ function Certificates() {
                         }
                     }
                 ]}
-                pagination={{itemsPerPage: 10}}
+                itemsPerPage={10}
             />
         </main>
     );

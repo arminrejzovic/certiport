@@ -25,7 +25,7 @@ function SideMenuItem({item, level}: SideMenuItemProps) {
                 </NavLink>
             <div style={{paddingLeft: `${level}rem`}}>
             {
-                item.children && item.children.map(child => <SideMenuItem item={child} level={level + 1}/>)
+                item.children && item.children.map((child, index) => <SideMenuItem key={index} item={child} level={level + 1}/>)
             }
             </div>
         </div>
