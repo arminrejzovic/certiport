@@ -9,7 +9,7 @@ import {faBackwardStep, faChevronLeft, faChevronRight, faForwardStep} from "@for
 // TODO Think about adding custom row rendering method as a prop                                                        DONE
 // TODO Fix sorting when table is paginated                                                                             DONE
 // TODO Consider removing rowActions, since they overlap with custom rows                                               DONE
-// TODO Change defaultSort by removing the option to pass a custom sorting function
+// TODO Change defaultSort by removing the option to pass a custom sorting function                                     DONE - removed default sort all-together
 // TODO Make <tfoot> stick to the bottom
 
 /**
@@ -120,9 +120,7 @@ function Table<T>(props: TableProps<T>) {
 
     function partialSort<T>(arr: T[], start: number, end: number, sortingFunction: (a: T, b: T) => -1 | 0 | 1) {
         const part = arr.splice(start, end - start );
-        console.log(part);
         part.sort(sortingFunction);
-        console.log(part);
         arr.splice(start, 0, ...part);
         return arr;
     }

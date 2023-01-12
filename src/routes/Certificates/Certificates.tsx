@@ -107,6 +107,76 @@ function Certificates() {
                 supplier: "Jetbrains",
                 validFrom: "01.01.2022",
                 validTo: "01.01.2023",
+            },
+            {
+                id: 14,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 15,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 16,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 17,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 18,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 19,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 20,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 21,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 22,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
+            },
+            {
+                id: 23,
+                type: "Webstorm Tips and Tricks",
+                supplier: "Jetbrains",
+                validFrom: "01.01.2022",
+                validTo: "01.01.2023",
             }
         ]
         setCertificates(mockCertificates)
@@ -130,7 +200,6 @@ function Certificates() {
                     {text: "Valid to", refersTo: "validTo"}
                 ]}
                 sort
-                defaultSort={{key: "id", order: SortOrder.ASC}}
                 widgets={[
                     {
                         position: "start",

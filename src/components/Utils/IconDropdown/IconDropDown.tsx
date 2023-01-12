@@ -16,7 +16,10 @@ function IconDropDown(props: IconDropDownProps) {
                 showMenu &&
                 <div className={Styles.dropdown}>
                     {props.actions.map((a) => {
-                        return <p className={Styles.dropdownItem} onClick={() => a.action()}>{a.label}</p>
+                        return <p className={Styles.dropdownItem} onClick={() => {
+                            a.action()
+                            setShowMenu(false);
+                        }}>{a.label}</p>
                     })}
                 </div>
             }
